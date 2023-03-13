@@ -1,0 +1,30 @@
+Flutter
+- Wer ist eingelogged anzeigen
+- Einsatzplan: Liste der Monate generisch nach today
+- Liste über Index lesen, statt mit for-schleife?
+- Mit Git verbinden, evt. auch vom Visual Studio aus
+
+PHP
+- DB stoppen, dann try catch so einbauen, dass vernünftige Fehlermeldung (echo)
+- UTF8-encoding prüfen, siehe connectionDBi, auch decoding
+- Passworte verschlüsselt speichern
+
+Weiteres Vorgehen
+php
+	- php-files aufrufen mit Schutz (Zerifikat, geheimzahl etc.)
+	- e-mail versenden auf Server testen
+	- Prozess aufrämer nach 15 Min.
+	- Log von: Einloggen, speichern, löschen Einsatz
+	
+Login page
+	- login mit pwRecover von e-mail
+	
+Einsatzplan
+	- Anzeige mit Monat (automatisch -2 +3), von, bis,
+	
+Admin-Page mit: 
+	- Generieren der Einsatzdaten, Standard Einstellungen: Zeit, Tage (Mo-So), an welchen Tagen generieren
+	- Einsatzdaten ergänzen
+	- Setzen, wenn nicht mehr verändert werden kann.
+	- Im Eisatzplan Ma löschen wenn geschützt (nur in Zukunft ab heute)
+	- Mitarbeiter-pflege
