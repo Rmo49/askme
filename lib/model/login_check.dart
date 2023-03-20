@@ -80,6 +80,23 @@ class LoginCheck {
     } catch (e) {
       return ('DB nicht gefunden \nFehler: $e');
     }
+  }
+
+  static Future readKey() async {
+    try {
+      final response = await http.post(MyUri.getUri("/readKey.php"));
+
+      if (response.statusCode == 200) {
+        print (response.body);
+        return (response.body);
+      } else {
+        return ('Konnte keine Verbindung aufbauen zu: '
+            'Status: ${response.statusCode}');
+      }
+    } catch (e) {
+      return ('Key nicht gefunden \nFehler: $e');
+    }
 
   }
+
 }

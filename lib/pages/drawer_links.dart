@@ -37,6 +37,24 @@ class DrawerLinks {
             },
           ),
           ListTile(
+            title: const Text('Setup'),
+            onTap: () {
+              Navigator.pushNamed(context, '/adminSetup', arguments: {});
+            },
+          ),
+          ListTile(
+            title: const Text('Monat planen'),
+            onTap: () {
+              Navigator.pushNamed(context, '/adminZeiten', arguments: {});
+            },
+          ),
+          ListTile(
+            title: const Text('Mitarbeiter'),
+            onTap: () {
+              Navigator.pushNamed(context, '/adminMa', arguments: {});
+            },
+          ),
+          ListTile(
             title: const Text('Logout'),
             onTap: () {
               Navigator.pushNamed(context, '/login', arguments: {});

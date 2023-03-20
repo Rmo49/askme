@@ -1,7 +1,7 @@
 library my_pri.globals;
 
 import 'package:intl/intl.dart';
-import 'mitarbeiter.dart';
+import 'ma_data.dart';
 
 // wenn im Testmode, login ohne
 const bool testMode = true;
@@ -15,11 +15,13 @@ const int initWerte = 0;
 final DateFormat dateFormDb = DateFormat('yyyy-MM-dd');
 // das Datenformat in Anzeige
 final DateFormat dateFormDisplay = DateFormat('d.M.yyyy');
-// Datumsformat für Anzeige: Tag d.M.
+// Datumsformat für Anzeige: Tag d.M., wird in main.dart gesetzt
 late DateFormat dateDisplay;
+// das aktuelle Datum
+final DateTime heute = DateTime.now();
 
 // Alle Mitarbeiter, wird nach dem Login eingelesen
-List<Mitarbeiter> maAllList = [];
+List<Mitarbeiter> maAllList = <Mitarbeiter>[];
 
 // Das Schema für Web (http / https)
 const String scheme = "https";

@@ -1,5 +1,5 @@
 import 'package:askme/model/email_sender.dart';
-import 'package:askme/model/mitarbeiter.dart';
+import 'package:askme/model/ma_data.dart';
 import 'package:flutter/material.dart';
 import 'package:askme/model/globals.dart' as global;
 
@@ -119,8 +119,17 @@ class _LoginState extends State<Login> {
                     },
                   ),
                 ),
-              ]),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextButton(
+                child: const Text("read Key"),
+                onPressed: () {
+                  _readKey(context);
+                },
+              ),
             ),
+          ]),
+      ),
             Padding(
                 padding: const EdgeInsets.all(5.0),
                 child: TextField(
@@ -143,8 +152,12 @@ class _LoginState extends State<Login> {
     // sollte idMaLogedIn erhalten wenn erfolgreich
     if (int.tryParse(respond) != null) {
       global.idMaLogedIn = int.parse(respond);
-      MaAll maAll = MaAll();
-      global.maAllList = await maAll.readMaAll();
+      // die Mitarbeiterliste einlesen
+      global.maAllList = await MaAll.readMaAll();
+      if (maAllList[0].idMa < 0) {
+        _txtInfo.text = "DB Fehler: Kann Mitarbeiter nicht lesen.";
+        return;
+      }
       // ignore: use_build_context_synchronously
       Navigator.pushNamed(context, '/einsatzplan', arguments: {});
     } else {
@@ -211,6 +224,13 @@ class _LoginState extends State<Login> {
 
   void _testDB(BuildContext context) async {
     String respond = await LoginCheck.testDb();
+    setState(() {
+      _displayInfo(respond);
+    });
+  }
+
+  void _readKey(BuildContext context) async {
+    String respond = await LoginCheck.readKey();
     setState(() {
       _displayInfo(respond);
     });

@@ -3,8 +3,32 @@ import 'package:http/http.dart' as http;
 import 'globals.dart' as global;
 import 'my_uri.dart';
 
-/// Die Zeile eines Einsatzplanes
+/// Die Zeile eines Einsatzes für die Palnung
 class Einsatz {
+  int idDatum = 0;
+  DateTime? datum;
+  String? zeit;
+
+  // Konstruktoren für verschiedene Bedürfinsse
+  Einsatz(DateTime this.datum, String this.zeit) {
+    //this.datum = DateTime.parse(datum);
+  }
+
+  // Konstruktoren für verschiedene Bedürfinsse
+  Einsatz.fromString(String datum, String this.zeit) {
+    this.datum = DateTime.parse(datum);
+  }
+
+  Einsatz.fromMap(Map<String, dynamic> map) {
+    idDatum = int.parse(map['idDatum']);
+    datum = DateTime.parse(map['datum']);
+    zeit = map['zeit'];
+  }
+
+}
+
+/// Die Zeile eines Einsatzes für den Einsatzplan
+class EinsatzMa {
   int idDatum = 0;
   DateTime? datum;
   String? zeit;
@@ -13,23 +37,23 @@ class Einsatz {
   bool isChecked = false;
 
   // Konstruktoren für verschiedene Bedürfinsse
-  Einsatz(String datum, String this.zeit, String this.names, this.idMaList) {
+  EinsatzMa(String datum, String this.zeit, String this.names, this.idMaList) {
     this.datum = DateTime.parse(datum);
   }
 
-  Einsatz.fromMap(Map<String, dynamic> map) {
+  EinsatzMa.fromMap(Map<String, dynamic> map) {
     idDatum = int.parse(map['idDatum']);
     datum = DateTime.parse(map['datum']);
     zeit = map['zeit'];
-
-    //  List<String> xx = map['ma'];
-    idMaList = getList(map['ma']);
+    idMaList = _getMaList(map['ma']);
   }
 
-  getList(List<dynamic> maIds) {
+  // dynamische Liste in int-Liste
+  _getMaList(List<dynamic> maIds) {
     idMaList = [];
     for (var element in maIds) {
       if (element == null) {
+        // wenn am Ende der Liste
         return idMaList;
       }
       int nr = -1;
@@ -45,11 +69,11 @@ class EinsatzPlanData {
   EinsatzPlanData();
 
   // der Einsatzplan
-  List<Einsatz> einsatzPlan = [];
+  List<EinsatzMa> einsatzPlan = [];
 
   /// Alle Einsätze eines Monates lesen
   /// month: 04.2023
-  Future<List<Einsatz>> readEinsatzAll(String month) async {
+  Future<List<EinsatzMa>> readEinsatzAll(String month) async {
     try {
       final response = await http.post(MyUri.getUri("/readEinsatzplan.php"),
           body: {"dbUser": global.dbUserRead, "dbpass": global.dbpass,
@@ -122,10 +146,10 @@ class EinsatzPlanData {
   }
 
   /// Den Einsatzplan mi den entsprechenden Daten füllen
-  List<Einsatz> _setEinsatzData(List einsatzFromDb) {
-    List<Einsatz> einsatzPlan = [];
+  List<EinsatzMa> _setEinsatzData(List einsatzFromDb) {
+    List<EinsatzMa> einsatzPlan = [];
     for (var element in einsatzFromDb) {
-      Einsatz einsatz = Einsatz.fromMap(element);
+      EinsatzMa einsatz = EinsatzMa.fromMap(element);
       einsatzPlan.add(einsatz);
     }
     // TODO: Liste sortieren
@@ -139,17 +163,17 @@ class EinsatzPlanData {
   EinsatzPlanData.fromList(List<dynamic> einsatzList) {
     einsatzPlan = [];
     for (var element in einsatzList) {
-      Einsatz einsatz = Einsatz.fromMap(element);
+      EinsatzMa einsatz = EinsatzMa.fromMap(element);
       einsatzPlan.add(einsatz);
     }
   }
 
   /// Den Einsatzplan setzen, wenn keine Daten gefunden,
   /// oder sonstige Fehler
-  List<Einsatz> _setEinsatzError(String errorMessage) {
-    Einsatz einsatzErr = Einsatz(DateTime.now().toString(), "error",
+  List<EinsatzMa> _setEinsatzError(String errorMessage) {
+    EinsatzMa einsatzErr = EinsatzMa(DateTime.now().toString(), "error",
         errorMessage, []);
-    List<Einsatz> einsatzListe = [];
+    List<EinsatzMa> einsatzListe = [];
     einsatzListe.add(einsatzErr);
     return einsatzListe;
   }

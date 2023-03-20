@@ -22,16 +22,16 @@ class Mitarbeiter {
 }
 
 class MaAll {
-  List<Mitarbeiter> _maList = [];
+  static List<Mitarbeiter> _maList = [];
 
   /// Alle Mitarbeiter von der DB lesen.
-  Future<List<Mitarbeiter>> readMaAll() async {
+  static Future<List<Mitarbeiter>> readMaAll() async {
     if (global.maAllList.isNotEmpty && global.maAllList.length > 3) {
       return global.maAllList;
     }
     try {
       final response = await http.post(MyUri.getUri("/readMaAll.php"),
-          body: {"dbUser": global.dbUserRead, "dbpass": 'global.dbpass'});
+          body: {"dbUser": global.dbUserRead, "dbpass": global.dbpass});
 
     if (response.statusCode == 200) {
         Object oo = response.body;
@@ -47,7 +47,7 @@ class MaAll {
   }
 
   /// Die MitarbeiterListe Liste mit allen Werten füllen
-  List<Mitarbeiter> _setMaData(List maFromDb) {
+  static List<Mitarbeiter> _setMaData(List maFromDb) {
     List<Mitarbeiter> maList = [];
     for (var element in maFromDb) {
       Map<String, dynamic> map = element;
@@ -65,6 +65,11 @@ class MaAll {
 
   /// Den Name eines Mitarbeiters lesen
   static String getName(int idMa) {
+    /* einlesen, wenn nicht mehr verfügbar
+    if (global.maAllList.isEmpty) {
+      global.maAllList = maAll.readMaAll();
+    }
+    */
     for (Mitarbeiter ma in global.maAllList) {
       if (ma.idMa == idMa) {
         return "${ma.vorname} ${ma.name}";

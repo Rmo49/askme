@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../model/einsatz_data.dart';
-import '../model/mitarbeiter.dart';
+import '../model/ma_data.dart';
 import '../model/globals.dart' as global;
 import 'app_bar.dart';
 import 'drawer_links.dart';
@@ -12,7 +12,8 @@ class EinsatzPlan extends StatefulWidget {
 }
 
 class _EinsatzPlanState extends State<EinsatzPlan> {
-  List<String> list = <String>['April', 'Mai', 'Juni'];
+  // TODO muss noch automatisiert werden mit Kalender
+  List<String> monatList = <String>['April', 'Mai', 'Juni'];
 
   final DrawerLinks _homeDrawer = DrawerLinks();
 
@@ -20,14 +21,14 @@ class _EinsatzPlanState extends State<EinsatzPlan> {
   final EinsatzPlanData _einsatzData = EinsatzPlanData();
 
   // die Daten eines Monates
-  List<Einsatz> _einsatzList = [];
+  List<EinsatzMa> _einsatzList = [];
 
   // die Höhe der Rows
   final double colH = 20.0;
   // die Breite der Rows
   final double col1 = 80.0;
   final double col2 = 100.0;
-
+  // ab 3. Col flexibel
   final int flex3 = 1;
   final int flex4 = 10;
   final int flex5 = 1;
@@ -37,7 +38,7 @@ class _EinsatzPlanState extends State<EinsatzPlan> {
     return Scaffold(
       appBar: MyAppBar.get(context),
       body: Column(
-        children: [_getMenu(context), _getEinsatzPlan(context)],
+        children: [_showMenu(context), _showEinsatzPlan(context)],
       ),
 
       // das Menü auf der linken Seite
@@ -48,8 +49,8 @@ class _EinsatzPlanState extends State<EinsatzPlan> {
   }
 
   /// Das Menu mit Monatsauswahl und Buttons
-  Widget _getMenu(BuildContext context) {
-    String dropdownValue = list.first;
+  Widget _showMenu(BuildContext context) {
+    String dropdownValue = monatList.first;
 
     return SizedBox(
       height: 80,
@@ -72,7 +73,7 @@ class _EinsatzPlanState extends State<EinsatzPlan> {
                     dropdownValue = value!;
                   });
                 },
-                items: list.map<DropdownMenuItem<String>>((String value) {
+                items: monatList.map<DropdownMenuItem<String>>((String value) {
                   return DropdownMenuItem<String>(
                     value: value,
                     child: Text(value),
@@ -99,17 +100,19 @@ class _EinsatzPlanState extends State<EinsatzPlan> {
   }
 
   /// der gesamte Einsatzplan im unteren Screeenbereich
-  Widget _getEinsatzPlan(BuildContext context) {
+  Widget _showEinsatzPlan(BuildContext context) {
     return Expanded(
       child: SingleChildScrollView(
         scrollDirection: Axis.vertical,
-        child: Column(children: _getRowList(context)),
+        child: Column(children: _showRowListEinsatz(context)),
       ),
     );
   }
 
-  List<Widget> _getRowList(BuildContext context) {
+  /// Die Liste aller Einsätze
+  List<Widget> _showRowListEinsatz(BuildContext context) {
     List<Widget> rowList = [];
+    // nur Text anzeigen, wenn keine Daten
     if (_einsatzList.isEmpty) {
       rowList.add(Row(children: [
         Text("noch keine Daten \n auf Anzeigen drücken wenn Monat gewählt")
@@ -117,7 +120,7 @@ class _EinsatzPlanState extends State<EinsatzPlan> {
       return rowList;
     }
     else {
-      Einsatz element = _einsatzList[0];
+      EinsatzMa element = _einsatzList[0];
       if (element.zeit!.startsWith('error')) {
         String? fehler = element.names;
         rowList.add(Row(children: [
@@ -125,16 +128,16 @@ class _EinsatzPlanState extends State<EinsatzPlan> {
         ]));
         return rowList;
       }
-      // rowList.add(_getRowTitle(context));
-      for (Einsatz element in _einsatzList) {
-        rowList.add(_getRow(context, element));
+      // alle Einsätze anzeigen
+      for (EinsatzMa element in _einsatzList) {
+        rowList.add(_getRowEinsatz(context, element));
       }
       return rowList;
     }
   }
 
-  /// Eine Zeile darstellen
-  Widget _getRow(BuildContext context, Einsatz einsatz) {
+  /// Eine Zeile darstellen, wenn Wochenende eeingegraut
+  Widget _getRowEinsatz(BuildContext context, EinsatzMa einsatz) {
     // zuerst die Namen lesen
     String maNames = _getMaNames(einsatz.idMaList);
     // Sa/So grau
@@ -165,7 +168,7 @@ class _EinsatzPlanState extends State<EinsatzPlan> {
   }
 
   /// Entscheidet, ob Checkbox angezeigt werden soll.
-  Widget _getCheckbox(Einsatz einsatz) {
+  Widget _getCheckbox(EinsatzMa einsatz) {
     if (!_isInList(global.idMaLogedIn, einsatz.idMaList) &&
         (einsatz.idMaList.isEmpty || einsatz.idMaList.length < 2)) {
       return Transform.scale(
@@ -181,7 +184,7 @@ class _EinsatzPlanState extends State<EinsatzPlan> {
   }
 
   /// Entscheidet, ob delete Icon angezeigt werden soll.
-  Widget _getDelIcon(Einsatz einsatz) {
+  Widget _getDelIcon(EinsatzMa einsatz) {
     if (_isInList(global.idMaLogedIn, einsatz.idMaList)) {
       return IconButton(
         icon: Icon(Icons.delete),
@@ -214,14 +217,14 @@ class _EinsatzPlanState extends State<EinsatzPlan> {
     return name.toString();
   }
 
-  _checkboxChanged(BuildContext context, bool? value, Einsatz einsatz) {
+  _checkboxChanged(BuildContext context, bool? value, EinsatzMa einsatz) {
     setState(() {
       einsatz.isChecked = value!;
     });
   }
 
   /// löschen eines Einsatzens
-  _maDelete(BuildContext context, Einsatz einsatz) {
+  _maDelete(BuildContext context, EinsatzMa einsatz) {
     String datum;
     datum = global.dateDisplay.format(einsatz.datum!);
     // fragen
@@ -256,10 +259,10 @@ class _EinsatzPlanState extends State<EinsatzPlan> {
   }
 
   /// zuerst den Einsatzplan einlesen
-  Future<List<Einsatz>> _readData() async {
+  Future<List<EinsatzMa>> _readData() async {
     _einsatzList = await _einsatzData.readEinsatzAll('2023-04');
     setState(() {
-      _getRowList(context);
+      _showRowListEinsatz(context);
     });
     return _einsatzList;
   }
@@ -268,7 +271,7 @@ class _EinsatzPlanState extends State<EinsatzPlan> {
   void _save(BuildContext context) async {
     // ignore: unused_local_variable
     String respond = "";
-    for (Einsatz einsatz in _einsatzList) {
+    for (EinsatzMa einsatz in _einsatzList) {
       if (einsatz.isChecked) {
         respond =
             await _einsatzData.addEinsatz(einsatz.idDatum, global.idMaLogedIn);
@@ -293,18 +296,3 @@ class _EinsatzPlanState extends State<EinsatzPlan> {
     setState(() {});
   }
 }
-
-/*
-          showDialog(
-              context: context,
-              builder: (ctx) => AlertDialog(
-                title: Text("Connection Test"),
-                content: Text(respond),
-                actions: [
-                  TextButton(
-                      child: Text("OK"),
-                      onPressed: () {
-                      }),
-                ],
-              ));
- */

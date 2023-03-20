@@ -1,3 +1,5 @@
+import 'package:askme/pages/admin_ma.dart';
+import 'package:askme/pages/admin_zeiten.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
@@ -6,6 +8,8 @@ import 'package:askme/model/globals.dart' as global;
 import 'package:askme/pages/einsatz_plan.dart';
 import 'package:askme/pages/login.dart';
 import 'package:askme/pages/test.dart';
+import 'package:askme/pages/verschluesseln.dart';
+import 'package:askme/pages/admin_setup.dart';
 
 void main() {
   initializeDateFormatting("de_CH", null);
@@ -55,7 +59,11 @@ class MyApp extends StatelessWidget {
       routes: {
         '/login': (context) => Login(),
         '/einsatzplan': (context) => EinsatzPlan(),
-        '/testpage': (context) => Test()
+        '/testpage': (context) => Test(),
+        '/verschluesseln': (context) => Verschluesseln(),
+        '/adminSetup': (context) => AdminSetup(),
+        '/adminZeiten': (context) => AdminZeiten(),
+        '/adminMa': (context) => AdminMa(),
       },
       // damit kein BuildContext across async gaps.
 //      navigatorKey: global.navigatorKey,

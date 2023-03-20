@@ -1,4 +1,6 @@
 Flutter
+- AdminZeiten: Liste richtig anzeigen (Wochenende, Datumsformat)
+
 - Wer ist eingelogged anzeigen
 - Einsatzplan: Liste der Monate generisch nach today
 - Liste über Index lesen, statt mit for-schleife?
